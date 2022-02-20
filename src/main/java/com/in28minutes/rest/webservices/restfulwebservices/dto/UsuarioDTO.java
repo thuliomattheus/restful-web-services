@@ -5,12 +5,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.passay.PasswordData;
-import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.in28minutes.rest.webservices.restfulwebservices.config.annotation.ValidPassword;
 
-public class UsuarioDTO extends RepresentationModel<UsuarioDTO> {
+@JsonFilter("UsuarioDTOFilter")
+public class UsuarioDTO {
 
     private Long id;
 

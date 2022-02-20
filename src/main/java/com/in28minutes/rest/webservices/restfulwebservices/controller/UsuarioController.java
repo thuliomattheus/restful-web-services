@@ -1,76 +1,87 @@
 package com.in28minutes.rest.webservices.restfulwebservices.controller;
 
-import com.in28minutes.rest.webservices.restfulwebservices.dto.UsuarioDTO;
-import com.in28minutes.rest.webservices.restfulwebservices.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import javax.validation.Valid;
+import com.in28minutes.rest.webservices.restfulwebservices.dto.UsuarioDTO;
+import com.in28minutes.rest.webservices.restfulwebservices.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+  @Autowired
+  private MessageSource messageSource;
 
-    @GetMapping("")
-    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
-        List<UsuarioDTO> usuarios = usuarioService.findAll();
+  @Autowired
+  private UsuarioService usuarioService;
 
-        return new ResponseEntity<>(usuarios, HttpStatus.OK);
-    }
+  @GetMapping("")
+  public ResponseEntity<List<EntityModel<UsuarioDTO>>> getAllUsuarios() {
+    List<UsuarioDTO> usuarios = usuarioService.findAll();
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable long id) {
-        UsuarioDTO usuarioDto = addLinks(usuarioService.findUsuarioById(id));
+    List<EntityModel<UsuarioDTO>> models = usuarios.stream().map(this::addLinks).collect(Collectors.toList());
 
-        return new ResponseEntity<>(usuarioDto, HttpStatus.OK);
-    }
+    return new ResponseEntity<>(models, HttpStatus.OK);
+  }
 
-    @PostMapping("")
-    public ResponseEntity<UsuarioDTO> saveNewUsuario(@RequestBody @Valid UsuarioDTO novoUsuario) {
-        UsuarioDTO usuarioDto = addLinks(usuarioService.save(novoUsuario));
+  @GetMapping("/{id}")
+  public ResponseEntity<EntityModel<UsuarioDTO>> getUsuarioById(@PathVariable long id) {
+    EntityModel<UsuarioDTO> model = addLinks(usuarioService.findUsuarioById(id));
 
-        return new ResponseEntity<>(usuarioDto, HttpStatus.CREATED);
-    }
+    return new ResponseEntity<>(model, HttpStatus.OK);
+  }
 
-    private UsuarioDTO addLinks(UsuarioDTO usuarioDto) {
+  @PostMapping("")
+  public ResponseEntity<EntityModel<UsuarioDTO>> saveNewUsuario(@RequestBody @Valid UsuarioDTO novoUsuario) {
+    EntityModel<UsuarioDTO> model = addLinks(usuarioService.save(novoUsuario));
 
-        usuarioDto.add(
-            linkTo(
-                methodOn(UsuarioController.class)
-                    .getUsuarioById(usuarioDto.getId())
-            )
-            .withSelfRel()
-            .withType(HttpMethod.GET.toString())
-        );
+    return new ResponseEntity<>(model, HttpStatus.CREATED);
+  }
 
-        usuarioDto.add(
-            linkTo(
-                methodOn(UsuarioController.class)
-                    .getAllUsuarios()
-            )
-            .withRel("listar todos os usuários")
-            .withType(HttpMethod.GET.toString())
-        );
+  private EntityModel<UsuarioDTO> addLinks(UsuarioDTO usuarioDto) {
 
-        usuarioDto.add(
-            linkTo(
-                methodOn(UsuarioController.class)
-                    .saveNewUsuario(usuarioDto)
-            )
-            .withRel("cadastrar novo usuário")
-            .withType(HttpMethod.POST.toString())
-        );
+    EntityModel<UsuarioDTO> model = EntityModel.of(usuarioDto);
+    Locale locale = LocaleContextHolder.getLocale();
 
-        return usuarioDto;
-    }
+    // O header Accept-Language pode ser usado para informar o idioma das messages.properties
+    // Exemplos: pt, pt-BR, en, en-US, es, fr, it...
+
+    model.add(linkTo(methodOn(UsuarioController.class)
+        .getUsuarioById(usuarioDto.getId()))
+        .withSelfRel()
+        .withType(HttpMethod.GET.toString()));
+
+    model.add(linkTo(methodOn(UsuarioController.class)
+        .getAllUsuarios())
+        .withRel(messageSource.getMessage("list.all.users", null, locale))
+        .withType(HttpMethod.GET.toString()));
+
+    model.add(linkTo(methodOn(UsuarioController.class)
+        .saveNewUsuario(usuarioDto))
+        .withRel(messageSource.getMessage("create.new.user", null, locale))
+        .withType(HttpMethod.POST.toString()));
+
+    return model;
+  }
 }
