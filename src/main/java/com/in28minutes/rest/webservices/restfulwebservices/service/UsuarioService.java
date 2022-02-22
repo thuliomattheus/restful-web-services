@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.in28minutes.rest.webservices.restfulwebservices.dto.UsuarioDTO;
 import com.in28minutes.rest.webservices.restfulwebservices.dto.mapper.UsuarioMapper;
+import com.in28minutes.rest.webservices.restfulwebservices.entity.Usuario;
 import com.in28minutes.rest.webservices.restfulwebservices.exception.UsuarioNotFoundException;
-import com.in28minutes.rest.webservices.restfulwebservices.model.Usuario;
 import com.in28minutes.rest.webservices.restfulwebservices.repository.UsuarioRepository;
 
 @Service

@@ -1,7 +1,7 @@
 package com.in28minutes.rest.webservices.restfulwebservices.dto.mapper;
 
 import com.in28minutes.rest.webservices.restfulwebservices.dto.UsuarioDTO;
-import com.in28minutes.rest.webservices.restfulwebservices.model.Usuario;
+import com.in28minutes.rest.webservices.restfulwebservices.entity.Usuario;
 
 import java.util.List;
 import java.util.stream.Collectors;

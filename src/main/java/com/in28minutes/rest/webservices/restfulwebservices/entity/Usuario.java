@@ -1,9 +1,12 @@
-package com.in28minutes.rest.webservices.restfulwebservices.model;
+package com.in28minutes.rest.webservices.restfulwebservices.entity;
+
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Usuario {
@@ -15,6 +18,9 @@ public class Usuario {
     private String login;
     private String password;
     private String email;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Post> posts;
 
     public Long getId() {
         return id;
@@ -54,5 +60,13 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<Post> getPosts() {
+      return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+      this.posts = posts;
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EntityScan("com.in28minutes.rest.webservices.restfulwebservices.model")
+@EntityScan("com.in28minutes.rest.webservices.restfulwebservices.entity")
 @EnableJpaRepositories("com.in28minutes.rest.webservices.restfulwebservices.repository")
 public class RestfulWebServicesApplication {
 

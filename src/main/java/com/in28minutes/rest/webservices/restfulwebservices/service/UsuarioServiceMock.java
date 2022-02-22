@@ -1,7 +1,8 @@
 package com.in28minutes.rest.webservices.restfulwebservices.service;
 
+import com.in28minutes.rest.webservices.restfulwebservices.entity.Usuario;
 import com.in28minutes.rest.webservices.restfulwebservices.exception.UsuarioNotFoundException;
-import com.in28minutes.rest.webservices.restfulwebservices.model.Usuario;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

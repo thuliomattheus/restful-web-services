@@ -24,10 +24,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.in28minutes.rest.webservices.restfulwebservices.dto.UsuarioDTO;
+import com.in28minutes.rest.webservices.restfulwebservices.dto.mapper.UsuarioMapper;
+import com.in28minutes.rest.webservices.restfulwebservices.entity.Post;
+import com.in28minutes.rest.webservices.restfulwebservices.entity.Usuario;
+import com.in28minutes.rest.webservices.restfulwebservices.service.PostService;
 import com.in28minutes.rest.webservices.restfulwebservices.service.UsuarioService;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
   @Autowired
@@ -35,6 +39,9 @@ public class UsuarioController {
 
   @Autowired
   private UsuarioService usuarioService;
+
+  @Autowired
+  private PostService postService;
 
   @GetMapping("")
   public ResponseEntity<List<EntityModel<UsuarioDTO>>> getAllUsuarios() {
@@ -50,6 +57,15 @@ public class UsuarioController {
     EntityModel<UsuarioDTO> model = addLinks(usuarioService.findUsuarioById(id));
 
     return new ResponseEntity<>(model, HttpStatus.OK);
+  }
+
+  @PostMapping("/{id}/posts")
+  public ResponseEntity<Post> createPostLinkedToUsuario(@PathVariable long id, @RequestBody Post novoPost) {
+    Usuario usuarioAssociado = UsuarioMapper.fromDTO(usuarioService.findUsuarioById(id));
+    novoPost.setUsuario(usuarioAssociado);
+    novoPost = postService.save(novoPost);
+
+    return new ResponseEntity<>(novoPost, HttpStatus.CREATED);
   }
 
   @PostMapping("")
